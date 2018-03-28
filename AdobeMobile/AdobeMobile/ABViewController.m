@@ -25,13 +25,12 @@
 
 - (void)ABActivity
 {
-    /*
-    // Here 'a1-mobile-ab' is the name of the location. This will show up in the content
+    // Here 'welcome-message-rp' is the name of the location. This will show up in the content
     // location dropdown in the Target UI.
 
     // Replace a1 with your unique user number.
     
-    ADBTargetLocationRequest* locationRequest = [ADBMobile targetCreateRequestWithName:@"a1-mobile-ab"
+    ADBTargetLocationRequest* locationRequest = [ADBMobile targetCreateRequestWithName:@"welcome-message-rp"
                                                                         defaultContent:@"Hello there!"
                                                                             parameters:nil];
     
@@ -44,13 +43,46 @@
         [self performSelectorOnMainThread:@selector(ABActivityChanges:) withObject:content waitUntilDone:YES];
         
     }];
-    */
+
     
 }
 
 -(void)ABActivityChanges: (NSString*) content
 {
-    [_welcomeMessage setTitle: content forState: UIControlStateNormal];
+    // Treat content as JSON-encoded string
+    NSData *data = [content dataUsingEncoding:NSUTF8StringEncoding];
+    NSError *err = nil;
+    id jsonObject = [NSJSONSerialization JSONObjectWithData:data options:0 error:&err];
+    
+    if(err) {
+        NSLog(@"Unable to parse JSON message \"%@\", treating as string", content);
+        if([content isKindOfClass:[NSString class]]) {
+            [_welcomeMessage setTitle: content forState: UIControlStateNormal];
+        }
+        return;
+    }
+    
+    
+    NSDictionary *parsedDict = jsonObject;
+    NSString *buttonText = [parsedDict objectForKey:@"text"];
+    NSString *imageSelect = [parsedDict objectForKey:@"image"];
+    
+    if(buttonText && [buttonText isKindOfClass:[NSString class]]) {
+        [_welcomeMessage setTitle: buttonText forState: UIControlStateNormal];
+    }
+    
+    if(imageSelect && [imageSelect isKindOfClass:[NSString class]]) {
+        if([imageSelect isEqualToString:@"image1"]) {
+            _imageView.image = [UIImage imageNamed:@"image1.png"];
+        } else if([imageSelect isEqualToString:@"image2"]) {
+            _imageView.image = [UIImage imageNamed:@"image2.png"];
+        } else if([imageSelect isEqualToString:@"image3"]) {
+            _imageView.image = [UIImage imageNamed:@"image3.png"];
+        } else {
+            // Do nothing.
+        }
+    }
+
 }
 
 @end

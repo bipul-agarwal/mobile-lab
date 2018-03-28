@@ -11,6 +11,7 @@
 @interface ABViewController : UIViewController
 
 @property (weak, nonatomic) IBOutlet UIButton *welcomeMessage;
+@property (weak, nonatomic) IBOutlet UIImageView *imageView;
 
 -(void)ABActivity;
 -(void)ABActivityChanges: (NSString*) content;

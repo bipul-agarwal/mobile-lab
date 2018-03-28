@@ -26,7 +26,6 @@
 
 - (void)XTActivity {
 
-    /*
     // Assign a random member level and reset user
     NSArray *levels = [NSArray arrayWithObjects: @"silver", @"gold", @"sapphire", nil];
     NSString *randomLevel = [levels objectAtIndex:arc4random()%[levels count]];
@@ -43,17 +42,61 @@
 
     // Replace a1 with your unique user number.
 
-     ADBTargetLocationRequest* locationRequest = [ADBMobile targetCreateRequestWithName:@"a1-mobile-xt"
+     ADBTargetLocationRequest* locationRequest = [ADBMobile targetCreateRequestWithName:@"welcome-message-xt"
                                                                         defaultContent:@"Hello there!"
                                                                             parameters:targetParams];
     
     [ADBMobile targetLoadRequest:locationRequest callback:^(NSString *content){
         [self performSelectorOnMainThread:@selector(XTActivityChanges:) withObject:content waitUntilDone:YES];
     }];
-    */
+    
+}
+-(void)XTActivityChanges: (NSString*) content {
+    // Treat content as JSON-encoded string
+    NSData *data = [content dataUsingEncoding:NSUTF8StringEncoding];
+    NSError *err = nil;
+    id jsonObject = [NSJSONSerialization JSONObjectWithData:data options:0 error:&err];
+    
+    if(err) {
+        NSLog(@"Unable to parse JSON message \"%@\", treating as string", content);
+        [self XTActivityChangesDefault:content];
+        return;
+    }
+    
+    
+    NSDictionary *parsedDict = jsonObject;
+    NSString *urlText = [parsedDict objectForKey:@"url"];
+    NSString *imageSelect = [parsedDict objectForKey:@"image"];
+    
+    if(urlText && [urlText isKindOfClass:[NSString class]]) {
+        NSURL *imageUrl = [NSURL URLWithString:urlText];
+        if(imageUrl) {
+            NSURLSession *session = [NSURLSession sharedSession];
+            
+            [[session dataTaskWithURL:imageUrl
+                    completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            _memberLevel.image = [UIImage imageWithData:data];
+                        });
+                    }] resume];
+        }
+    }
+    
+    if(imageSelect && [imageSelect isKindOfClass:[NSString class]]) {
+        if([imageSelect isEqualToString:@"image1"]) {
+            _imageView.image = [UIImage imageNamed:@"image1.png"];
+        } else if([imageSelect isEqualToString:@"image2"]) {
+            _imageView.image = [UIImage imageNamed:@"image2.png"];
+        } else if([imageSelect isEqualToString:@"image3"]) {
+            _imageView.image = [UIImage imageNamed:@"image3.png"];
+        } else {
+            // Do nothing.
+        }
+    }
+
 }
 
--(void)XTActivityChanges: (NSString*) content {
+-(void)XTActivityChangesDefault: (NSString*) content {
     NSDataDetector* detector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:nil];
     NSArray* matches = [detector matchesInString:content options:0
                                            range:NSMakeRange(0, [content length])];

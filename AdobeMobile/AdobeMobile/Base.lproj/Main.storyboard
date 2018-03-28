@@ -341,6 +341,7 @@
                     </view>
                     <tabBarItem key="tabBarItem" title="XT" image="second" id="cPa-gy-q4n"/>
                     <connections>
+                        <outlet property="imageView" destination="zcN-ze-6AF" id="qM8-Vr-2yV"/>
                         <outlet property="memberLevel" destination="cnf-0o-j4y" id="Qz1-1R-a0T"/>
                     </connections>
                 </viewController>

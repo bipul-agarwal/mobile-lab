@@ -1,10 +1,10 @@
 {
   "lastModified": "2017-03-08T23:17:02.374Z",
   "marketingCloud": {
-    "org": "B8A054D958807F770A495DD6@AdobeOrg"
+    "org": "A2E3847157207A807F000101@AdobeOrg"
   },
   "target": {
-    "clientCode": "adobetargetmobile",
+    "clientCode": "adobeinternalags421",
     "timeout": 5
   },
   "audienceManager": {
